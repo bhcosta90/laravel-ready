@@ -221,6 +221,10 @@ function executeCommentsRemoval(): bool
 
 function executeCaptainHook()
 {
+    if (!is_dir('.git')) {
+        executeCommand('git init');
+    }
+
     $executeWhen = select('What type of execution do you wanna do??', [
         'pre-push',
         'pre-commit',
