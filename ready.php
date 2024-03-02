@@ -1,15 +1,12 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 use GuzzleHttp\Client;
-use Symfony\Component\Process\Process;
 
-use function Laravel\Prompts\error;
-use function Laravel\Prompts\info;
-use function Laravel\Prompts\multiselect;
-use function Laravel\Prompts\select;
-use function Laravel\Prompts\text;
+use function Laravel\Prompts\{error, info, multiselect, select, text};
+
+use Symfony\Component\Process\Process;
 
 $env = environment();
 
@@ -56,6 +53,7 @@ if ($type === 'packages') {
 /** Steps Execution */
 foreach ($steps as $step) {
     info($step . "...");
+
     try {
         if (($result = $step()) !== true) {
             throw new Exception($result);
@@ -69,15 +67,16 @@ foreach ($steps as $step) {
 }
 /** End Steps Execution */
 
-
 function environment(): array
 {
     $response = [];
     $handle = fopen(".env", "r");
+
     if ($handle) {
         while (($line = fgets($handle)) !== false) {
             $arrayLine = explode("=", $line);
             $first = array_shift($arrayLine);
+
             if (!empty($first)) {
                 $response[$first] = implode("=", $arrayLine);
             }
@@ -93,8 +92,8 @@ function executePintPreparation(): bool|string
 {
     try {
         if (verifyInstallDependency("laravel/pint") && ($status = executeCommand(
-                "composer require laravel/pint --dev"
-            )) !== true) {
+            "composer require laravel/pint --dev"
+        )) !== true) {
             return $status;
         }
 
@@ -124,8 +123,8 @@ function executeLaraStanPreparation(): bool|string
 {
     try {
         if (verifyInstallDependency("larastan/larastan") && ($status = executeCommand(
-                "composer require larastan/larastan --dev"
-            )) !== true) {
+            "composer require larastan/larastan --dev"
+        )) !== true) {
             return $status;
         }
 
@@ -156,6 +155,7 @@ function executeLaravelDebugBarPreparation(): bool|string
     if (verifyInstallDependency("barryvdh/laravel-debugbar")) {
         return executeCommand("composer require barryvdh/laravel-debugbar --dev");
     }
+
     return 'Laravel debugbar is already installed';
 }
 
@@ -164,6 +164,7 @@ function executeIdeHelperPreparation(): bool|string
     if (verifyInstallDependency("barryvdh/laravel-ide-helper")) {
         return executeCommand("composer require barryvdh/laravel-ide-helper --dev");
     }
+
     return 'Laravel ide helper is already installed';
 }
 
@@ -242,6 +243,7 @@ function executeCaptainHook()
         switch ($step) {
             case 'phpstan':
                 $actions[] = "./vendor/bin/phpstan analyse";
+
                 break;
             case 'test':
                 $actions[] = !verifyInstallDependency('pestphp/pest')
@@ -251,6 +253,7 @@ function executeCaptainHook()
                 break;
             case 'pint':
                 $actions[] = "./vendor/bin/pint --test";
+
                 break;
         }
     }
@@ -267,14 +270,14 @@ function executeCaptainHook()
     $content = substr($content, 0, -1);
 
     if (verifyInstallDependency('captainhook/captainhook') && executeCommand(
-            "composer require captainhook/captainhook --dev"
-        ) !== true) {
+        "composer require captainhook/captainhook --dev"
+    ) !== true) {
         return false;
     }
 
     if (verifyInstallDependency('captainhook/captainhook') && executeCommand(
-            "composer require captainhook/captainhook-phar --dev"
-        ) !== true) {
+        "composer require captainhook/captainhook-phar --dev"
+    ) !== true) {
         return false;
     }
 
@@ -320,10 +323,11 @@ function executeCommand(string $command): bool|string
 function verifyInstallDependency(string $package): bool
 {
     $composer = json_decode(file_get_contents('composer.json'));
-    return !(array_key_exists($package, (array)$composer->require) || array_key_exists(
-            $package,
-            (array)$composer->{'require-dev'}
-        ));
+
+    return !(array_key_exists($package, (array) $composer->require) || array_key_exists(
+        $package,
+        (array) $composer->{'require-dev'}
+    ));
 }
 
 $type = select('Do you want to remove this file?', [
