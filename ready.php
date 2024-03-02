@@ -25,6 +25,7 @@ $actions = [
     'executeLaraStanPreparation' => '[Dev. Tool] Install LaraStan',
     'executeLaravelDebugBarPreparation' => '[Dev. Tool] Install Laravel DebugBar',
     'executeIdeHelperPreparation' => '[Dev. Tool] Install Laravel IDE Helper',
+    'executeClockWorkPreparation' => '[Dev. Tool] Install Clock Work',
     'executeLivewirePreparation' => 'Install Livewire',
     'executeCommentsRemoval' => 'Remove Unnecessary Laravel Comments',
     'executeCaptainHook' => 'Creating captain hook',
@@ -299,6 +300,14 @@ CONTENT;
     }
 
     return true;
+}
+
+function executeClockWorkPreparation(){
+    if (verifyInstallDependency("itsgoingd/clockwork")) {
+        return executeCommand("composer require itsgoingd/clockwork --dev");
+    }
+
+    return 'Clock work is already installed';
 }
 
 function result(string $message): void
