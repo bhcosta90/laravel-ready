@@ -9,7 +9,7 @@ Simple PHP script that can be used to prepare new Laravel projects very easily.
 1. Download the file by using `wget` **in the root of your project:**
 
 ```bash
-wget https://aj.dev.br/ready.php
+wget https://github.com/bhcosta90/laravel-ready/blob/main/ready.php
 ```
 
 2. Execute the script:
