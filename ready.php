@@ -100,7 +100,7 @@ function executePintPreparation(): bool|string
 
         $endpoint = text(
             'What address is your pint configuration?',
-            default: 'https://github.com/bhcosta90/laravel-ready/blob/main/pint.json'
+            default: 'https://raw.githubusercontent.com/bhcosta90/laravel-ready/main/pint.json'
         );
 
         $content = (new Client())->get($endpoint);
@@ -131,7 +131,7 @@ function executeLaraStanPreparation(): bool|string
 
         $endpoint = text(
             'What address is your lara stan configuration?',
-            default: 'https://github.com/bhcosta90/laravel-ready/blob/main/phpstan.neon'
+            default: 'https://raw.githubusercontent.com/bhcosta90/laravel-ready/main/phpstan.neon'
         );
 
         $content = (new Client())->get($endpoint);
