@@ -24,4 +24,4 @@ php ready.php
 
 ### Install Dev. Tools Packages:
 
-<img src="dev-tools-packages.png" alt="dev tools packages">
+<img src="tools-packages.png" alt="dev tools packages">
