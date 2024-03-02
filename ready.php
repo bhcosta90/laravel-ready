@@ -241,7 +241,7 @@ function executeCaptainHook()
 
     foreach ($executionSteps as $step) {
         switch ($step) {
-            case 'phpstan':
+            case 'lara stan':
                 $actions[] = "./vendor/bin/phpstan analyse";
 
                 break;
