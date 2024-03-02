@@ -244,7 +244,7 @@ function executeCaptainHook()
                 $actions[] = "./vendor/bin/phpstan analyse";
                 break;
             case 'test':
-                $actions[] = verifyInstallDependency('pestphp/pest')
+                $actions[] = !verifyInstallDependency('pestphp/pest')
                     ? "./vendor/bin/pest --parallel"
                     : "./vendor/bin/phpunit";
 
