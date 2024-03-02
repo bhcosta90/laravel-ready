@@ -330,5 +330,5 @@ $type = select('Do you want to remove this file?', [
 if ($type) {
     info("Your project is ready to be used! 🚀 Deleting script in 5 seconds...");
     sleep(5);
-    #unlink(__FILE__);
+    unlink(__FILE__);
 }
