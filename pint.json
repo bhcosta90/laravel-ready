@@ -2,6 +2,7 @@
     "preset": "psr12",
     "rules": {
         "cast_spaces": true,
+        "declare_strict_types": true,
         "group_import": true,
         "single_import_per_statement": false,
         "no_unused_imports": true,
