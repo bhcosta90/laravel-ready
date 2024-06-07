@@ -12,7 +12,11 @@
         },
         "method_chaining_indentation": true,
         "binary_operator_spaces": {
-            "default": "single_space"
+            "default": "single_space",
+            "operators": {
+                "=>": "align_single_space_minimal",
+                "=": "align_single_space_minimal"
+            }
         },
         "nullable_type_declaration_for_default_null_value": {
             "use_nullable_type_declaration": false
