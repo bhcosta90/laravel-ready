@@ -1,6 +1,14 @@
 {
     "preset": "psr12",
     "rules": {
+        "no_blank_lines_after_phpdoc": true,
+        "fully_qualified_strict_types": true,
+        "types_spaces": {
+            "space": "single",
+            "space_multiple_catch": "single"
+        },
+        "statement_indentation": true,
+        "single_space_around_construct": true,
         "cast_spaces": true,
         "declare_strict_types": true,
         "group_import": true,
