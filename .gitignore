@@ -4,3 +4,4 @@
 !phpstan.neon
 !README.md
 !tools-packages.png
+!.lefthook
