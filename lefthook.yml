@@ -1,0 +1,19 @@
+#commit-msg:
+#  parallel: true
+#  scripts:
+#    "commit.sh":
+#      runner: bash
+pre-rebase:
+  parallel: true
+  scripts:
+    "danger.sh":
+      runner: bash
+pre-push:
+  parallel: true
+  scripts:
+    "test.sh":
+      runner: bash
+    "pint.sh":
+      runner: bash
+    "stan.sh":
+      runner: bash
