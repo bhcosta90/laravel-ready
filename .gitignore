@@ -5,3 +5,6 @@
 !README.md
 !tools-packages.png
 !.lefthook
+!.env.example
+!php-rector.php
+/vendor/
