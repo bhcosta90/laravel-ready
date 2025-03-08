@@ -24,12 +24,10 @@ jobs:
         run: |
           git config --global user.email "github-actions@github.com"
           git config --global user.name "GitHub Actions"
-
       - name: Create initial tag if no tag exists
         id: first_tag
         run: |
           TAG=$(git tag --list --sort=-v:refname | grep -E '^(dev-)?[0-9]+\.[0-9]+\.[0-9]+$' | sed 's/^dev-//' | head -n 1)
-
           if [[ -z "$TAG" ]]; then
             TAG="0.0.0"
             echo "No tag found. Creating initial tag: $TAG"
@@ -37,32 +35,26 @@ jobs:
             git push origin "$TAG"
             echo "Tag created successfully: $TAG"
           fi
-
       - name: Get the last valid tag
         id: last_tag
         run: |
           # Get the last stable version (X.Y.Z), ignoring dev-*
           LAST_STABLE_TAG=$(git tag --list --sort=-v:refname | grep -E '^[0-9]+\.[0-9]+\.[0-9]+$' | head -n 1)
-
           # Get the last feature version (dev-X.Y.Z-N)
           LAST_FEATURE_TAG=$(git tag --list --sort=-v:refname "dev-*" | head -n 1 | sed 's/dev-//')
-
           # Set the base for the new version
           if [[ -z "$LAST_STABLE_TAG" ]]; then
             LAST_STABLE_TAG="0.0.0"
           fi
-
           echo "Last stable version: $LAST_STABLE_TAG"
           echo "Last feature version: $LAST_FEATURE_TAG"
           echo "tag=$LAST_STABLE_TAG" >> $GITHUB_ENV
           echo "feature_tag=$LAST_FEATURE_TAG" >> $GITHUB_ENV
-
       - name: Determine new version number
         id: new_tag
         run: |
           STABLE_TAG="${{ env.tag }}"
           FEATURE_TAG="${{ env.feature_tag }}"
-
           BASE_TAG="$STABLE_TAG"
           
           # Fix the assignment of BRANCH for the push event
@@ -75,10 +67,8 @@ jobs:
           
           PREFIX=""
           NEW_SUFFIX=""
-
-          if [[ "$BRANCH" == feature/* || "$BRANCH" == develop ]]; then
+          if [[ "$BRANCH" =~ ^(feature|test|style)/.* || "$BRANCH" == "develop" ]]; then
             PREFIX="dev-"
-
             # If the last feature was based on the last stable version, continue the increment
             if [[ "$FEATURE_TAG" == "$STABLE_TAG"-* ]]; then
               LAST_SUFFIX=$(echo "$FEATURE_TAG" | grep -oE '[0-9]+$' || echo "-1")
@@ -86,35 +76,30 @@ jobs:
               # Otherwise, start counting from the new stable version
               LAST_SUFFIX="-1"
             fi
-
             NEW_SUFFIX=$((LAST_SUFFIX + 1))
-
-          elif [[ "$BRANCH" == release/* ]]; then
+          elif [[ "$BRANCH" =~ ^(release|perf)/.* ]]; then
             IFS='.' read -r -a VERSION <<< "$BASE_TAG"
             VERSION[1]=$((VERSION[1] + 1))
             VERSION[2]=0
             NEW_SUFFIX=""
             BASE_TAG="${VERSION[0]}.${VERSION[1]}.${VERSION[2]}"
-          
-          elif [[ "$BRANCH" == bugfix/* || "$BRANCH" == hotfix/* ]]; then
+          elif [[ "$BRANCH" =~ ^(bugfix|hotfix)/.* ]]; then
             IFS='.' read -r -a VERSION <<< "$BASE_TAG"
             VERSION[2]=$((VERSION[2] + 1))
             NEW_SUFFIX=""
             BASE_TAG="${VERSION[0]}.${VERSION[1]}.${VERSION[2]}"
           else
             echo "Unsupported branch for automatic tagging."
-            exit 1
+            echo "disabled=true" >> $GITHUB_ENV
+            exit 0
           fi
-
           if [[ -n "$NEW_SUFFIX" ]]; then
             NEW_TAG="${PREFIX}${BASE_TAG}-${NEW_SUFFIX}"
           else
             NEW_TAG="${PREFIX}${BASE_TAG}"
           fi
-
           echo "New tag: $NEW_TAG"
           echo "new_tag=$NEW_TAG" >> $GITHUB_ENV
-
       - name: Create and push new tag
         run: |
           # Check if the PR was merged or if it's a direct push to develop
@@ -123,11 +108,9 @@ jobs:
             exit 0
           fi
           
-          # Check if the push is on the develop branch
-          if [[ "${{ github.event_name }}" == "push" && "${{ github.ref }}" != "refs/heads/develop" ]]; then
-            echo "Push not made on the 'develop' branch. Ending the workflow."
+          if [[ "${{ env.disabled }}" == "true" ]]; then
+            echo "Process is disabled. Skipping tag creation."
             exit 0
           fi
-
           git tag "${{ env.new_tag }}"
           git push origin "${{ env.new_tag }}"
