@@ -24,7 +24,7 @@ jobs:
           git config --global user.name "GitHub Actions"
 
       - name: Criar a tag inicial caso nenhuma tag exista
-        id: last_tag
+        id: first_tag
         run: |
           TAG=$(git tag --list --sort=-v:refname | grep -E '^(dev-)?[0-9]+\.[0-9]+\.[0-9]+$' | sed 's/^dev-//' | head -n 1)
 
