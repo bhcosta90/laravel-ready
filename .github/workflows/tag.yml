@@ -15,49 +15,49 @@ jobs:
   auto-tag:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout código
+      - name: Checkout code
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Configurar Git
+      - name: Set up Git
         run: |
           git config --global user.email "github-actions@github.com"
           git config --global user.name "GitHub Actions"
 
-      - name: Criar a tag inicial caso nenhuma tag exista
+      - name: Create initial tag if no tag exists
         id: first_tag
         run: |
           TAG=$(git tag --list --sort=-v:refname | grep -E '^(dev-)?[0-9]+\.[0-9]+\.[0-9]+$' | sed 's/^dev-//' | head -n 1)
 
           if [[ -z "$TAG" ]]; then
             TAG="0.0.0"
-            echo "Nenhuma tag encontrada. Criando tag inicial: $TAG"
+            echo "No tag found. Creating initial tag: $TAG"
             git tag "$TAG"
             git push origin "$TAG"
-            echo "Tag criada com sucesso: $TAG"
+            echo "Tag created successfully: $TAG"
           fi
 
-      - name: Obter última tag válida
+      - name: Get the last valid tag
         id: last_tag
         run: |
-          # Obtém a última versão estável (X.Y.Z), ignorando as dev-*
+          # Get the last stable version (X.Y.Z), ignoring dev-*
           LAST_STABLE_TAG=$(git tag --list --sort=-v:refname | grep -E '^[0-9]+\.[0-9]+\.[0-9]+$' | head -n 1)
 
-          # Obtém a última versão de feature (dev-X.Y.Z-N)
+          # Get the last feature version (dev-X.Y.Z-N)
           LAST_FEATURE_TAG=$(git tag --list --sort=-v:refname "dev-*" | head -n 1 | sed 's/dev-//')
 
-          # Define a base da nova versão
+          # Set the base for the new version
           if [[ -z "$LAST_STABLE_TAG" ]]; then
             LAST_STABLE_TAG="0.0.0"
           fi
 
-          echo "Última versão estável: $LAST_STABLE_TAG"
-          echo "Última versão de feature: $LAST_FEATURE_TAG"
+          echo "Last stable version: $LAST_STABLE_TAG"
+          echo "Last feature version: $LAST_FEATURE_TAG"
           echo "tag=$LAST_STABLE_TAG" >> $GITHUB_ENV
           echo "feature_tag=$LAST_FEATURE_TAG" >> $GITHUB_ENV
 
-      - name: Determinar novo número de versão
+      - name: Determine new version number
         id: new_tag
         run: |
           STABLE_TAG="${{ env.tag }}"
@@ -65,10 +65,10 @@ jobs:
 
           BASE_TAG="$STABLE_TAG"
           
-          # Corrigir a atribuição de BRANCH no evento push
+          # Fix the assignment of BRANCH for the push event
           if [[ "${{ github.event_name }}" == "push" ]]; then
-            BRANCH="${{ github.ref }}"  # Ref completa: refs/heads/develop
-            BRANCH="${BRANCH/refs\/heads\//}"  # Remove o prefixo 'refs/heads/'
+            BRANCH="${{ github.ref }}"  # Full ref: refs/heads/develop
+            BRANCH="${BRANCH/refs\/heads\//}"  # Remove the 'refs/heads/' prefix
           else
             BRANCH="${GITHUB_HEAD_REF}"
           fi
@@ -79,11 +79,11 @@ jobs:
           if [[ "$BRANCH" == feature/* || "$BRANCH" == develop ]]; then
             PREFIX="dev-"
 
-            # Se a última feature já estava baseada na última versão estável, continua o incremento
+            # If the last feature was based on the last stable version, continue the increment
             if [[ "$FEATURE_TAG" == "$STABLE_TAG"-* ]]; then
               LAST_SUFFIX=$(echo "$FEATURE_TAG" | grep -oE '[0-9]+$' || echo "-1")
             else
-              # Caso contrário, iniciamos a contagem a partir da nova versão estável
+              # Otherwise, start counting from the new stable version
               LAST_SUFFIX="-1"
             fi
 
@@ -102,7 +102,7 @@ jobs:
             NEW_SUFFIX=""
             BASE_TAG="${VERSION[0]}.${VERSION[1]}.${VERSION[2]}"
           else
-            echo "Branch não suportada para tagging automática."
+            echo "Unsupported branch for automatic tagging."
             exit 1
           fi
 
@@ -112,20 +112,20 @@ jobs:
             NEW_TAG="${PREFIX}${BASE_TAG}"
           fi
 
-          echo "Nova tag: $NEW_TAG"
+          echo "New tag: $NEW_TAG"
           echo "new_tag=$NEW_TAG" >> $GITHUB_ENV
 
-      - name: Criar e enviar nova tag
+      - name: Create and push new tag
         run: |
-          # Verifica se o PR foi mesclado, ou se é um push direto na develop
+          # Check if the PR was merged or if it's a direct push to develop
           if [[ "${{ github.event.pull_request.merged }}" != "true" && "${{ github.event_name }}" != "push" ]]; then
-            echo "O PR não foi mesclado ou o evento não é um push. Finalizando o fluxo."
+            echo "The PR was not merged or the event is not a push. Ending the workflow."
             exit 0
           fi
           
-          # Verifica se o push é na branch develop
+          # Check if the push is on the develop branch
           if [[ "${{ github.event_name }}" == "push" && "${{ github.ref }}" != "refs/heads/develop" ]]; then
-            echo "Push não realizado na branch 'develop'. Finalizando o fluxo."
+            echo "Push not made on the 'develop' branch. Ending the workflow."
             exit 0
           fi
 
