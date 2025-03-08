@@ -8,6 +8,9 @@ on:
       - hotfix/**
     types:
       - closed
+  push:
+    branches:
+      - develop
 
 jobs:
   auto-tag:
@@ -62,11 +65,19 @@ jobs:
           FEATURE_TAG="${{ env.feature_tag }}"
 
           BASE_TAG="$STABLE_TAG"
-          BRANCH="${GITHUB_HEAD_REF}"
+          
+          # Corrigir a atribuição de BRANCH no evento push
+          if [[ "${{ github.event_name }}" == "push" ]]; then
+            BRANCH="${{ github.ref }}"  # Ref completa: refs/heads/develop
+            BRANCH="${BRANCH/refs\/heads\//}"  # Remove o prefixo 'refs/heads/'
+          else
+            BRANCH="${GITHUB_HEAD_REF}"
+          fi
+          
           PREFIX=""
           NEW_SUFFIX=""
 
-          if [[ "$BRANCH" == feature/* ]]; then
+          if [[ "$BRANCH" == feature/* || "$BRANCH" == develop ]]; then
             PREFIX="dev-"
 
             # Se a última feature já estava baseada na última versão estável, continua o incremento
@@ -107,10 +118,17 @@ jobs:
 
       - name: Criar e enviar nova tag
         run: |
-          if [[ "${{ github.event.pull_request.merged }}" != "true" ]]; then
-            echo "O PR não foi mesclado. Finalizando o fluxo."
+          # Verifica se o PR foi mesclado, ou se é um push direto na develop
+          if [[ "${{ github.event.pull_request.merged }}" != "true" && "${{ github.event_name }}" != "push" ]]; then
+            echo "O PR não foi mesclado ou o evento não é um push. Finalizando o fluxo."
             exit 0
           fi
           
+          # Verifica se o push é na branch develop
+          if [[ "${{ github.event_name }}" == "push" && "${{ github.ref }}" != "refs/heads/develop" ]]; then
+            echo "Push não realizado na branch 'develop'. Finalizando o fluxo."
+            exit 0
+          fi
+
           git tag "${{ env.new_tag }}"
           git push origin "${{ env.new_tag }}"
