@@ -5,3 +5,5 @@
 !README.md
 !tools-packages.png
 !.lefthook
+!.env.example
+/vendor/
