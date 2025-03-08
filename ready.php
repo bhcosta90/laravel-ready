@@ -339,13 +339,15 @@ function verifyInstallDependency(string $package): bool
     ));
 }
 
-$type = select('Do you want to remove this file?', [
-    true => 'True',
-    false => 'False',
-]);
+if ($env['APP_ENV'] !== 'github') {
+    $type = select('Do you want to remove this file?', [
+        true => 'True',
+        false => 'False',
+    ]);
 
-if ($type) {
-    info("Your project is ready to be used! 🚀 Deleting script in 5 seconds...");
-    sleep(5);
-    unlink(__FILE__);
+    if ($type) {
+        info("Your project is ready to be used! 🚀 Deleting script in 5 seconds...");
+        sleep(5);
+        unlink(__FILE__);
+    }
 }
