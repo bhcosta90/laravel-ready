@@ -8,9 +8,6 @@ on:
       - hotfix/**
     types:
       - closed
-  push:
-    branches:
-      - develop
 
 jobs:
   auto-tag:
@@ -56,7 +53,7 @@ jobs:
           PREFIX=""
           NEW_SUFFIX=""
 
-          if [[ "$BRANCH" == feature/*|| "$BRANCH" == develop ]]; then
+          if [[ "$BRANCH" == feature/* ]]; then
             PREFIX="dev-"
 
             # Se a última feature já estava baseada na última versão estável, continua o incremento
