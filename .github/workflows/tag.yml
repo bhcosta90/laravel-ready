@@ -8,6 +8,9 @@ on:
       - hotfix/**
     types:
       - closed
+  push:
+    branches:
+      - develop
 
 jobs:
   auto-tag:
