@@ -1,0 +1,103 @@
+name: Auto Tagging
+
+on:
+  pull_request:
+    branches:
+      - main
+      - develop
+      - hotfix/**
+    types:
+      - closed
+
+jobs:
+  auto-tag:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout código
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Configurar Git
+        run: |
+          git config --global user.email "github-actions@github.com"
+          git config --global user.name "GitHub Actions"
+
+      - name: Obter última tag válida
+        id: last_tag
+        run: |
+          # Obtém a última versão estável (X.Y.Z), ignorando as dev-*
+          LAST_STABLE_TAG=$(git tag --list --sort=-v:refname | grep -E '^[0-9]+\.[0-9]+\.[0-9]+$' | head -n 1)
+
+          # Obtém a última versão de feature (dev-X.Y.Z-N)
+          LAST_FEATURE_TAG=$(git tag --list --sort=-v:refname "dev-*" | head -n 1 | sed 's/dev-//')
+
+          # Define a base da nova versão
+          if [[ -z "$LAST_STABLE_TAG" ]]; then
+            LAST_STABLE_TAG="0.0.0"
+          fi
+
+          echo "Última versão estável: $LAST_STABLE_TAG"
+          echo "Última versão de feature: $LAST_FEATURE_TAG"
+          echo "tag=$LAST_STABLE_TAG" >> $GITHUB_ENV
+          echo "feature_tag=$LAST_FEATURE_TAG" >> $GITHUB_ENV
+
+      - name: Determinar novo número de versão
+        id: new_tag
+        run: |
+          STABLE_TAG="${{ env.tag }}"
+          FEATURE_TAG="${{ env.feature_tag }}"
+
+          BASE_TAG="$STABLE_TAG"
+          BRANCH="${GITHUB_HEAD_REF}"
+          PREFIX=""
+          NEW_SUFFIX=""
+
+          if [[ "$BRANCH" == feature/* ]]; then
+            PREFIX="dev-"
+
+            # Se a última feature já estava baseada na última versão estável, continua o incremento
+            if [[ "$FEATURE_TAG" == "$STABLE_TAG"-* ]]; then
+              LAST_SUFFIX=$(echo "$FEATURE_TAG" | grep -oE '[0-9]+$' || echo "-1")
+            else
+              # Caso contrário, iniciamos a contagem a partir da nova versão estável
+              LAST_SUFFIX="-1"
+            fi
+
+            NEW_SUFFIX=$((LAST_SUFFIX + 1))
+
+          elif [[ "$BRANCH" == release/* ]]; then
+            IFS='.' read -r -a VERSION <<< "$BASE_TAG"
+            VERSION[1]=$((VERSION[1] + 1))
+            VERSION[2]=0
+            NEW_SUFFIX=""
+            BASE_TAG="${VERSION[0]}.${VERSION[1]}.${VERSION[2]}"
+          
+          elif [[ "$BRANCH" == bugfix/* || "$BRANCH" == hotfix/* ]]; then
+            IFS='.' read -r -a VERSION <<< "$BASE_TAG"
+            VERSION[2]=$((VERSION[2] + 1))
+            NEW_SUFFIX=""
+            BASE_TAG="${VERSION[0]}.${VERSION[1]}.${VERSION[2]}"
+          else
+            echo "Branch não suportada para tagging automática."
+            exit 1
+          fi
+
+          if [[ -n "$NEW_SUFFIX" ]]; then
+            NEW_TAG="${PREFIX}${BASE_TAG}-${NEW_SUFFIX}"
+          else
+            NEW_TAG="${PREFIX}${BASE_TAG}"
+          fi
+
+          echo "Nova tag: $NEW_TAG"
+          echo "new_tag=$NEW_TAG" >> $GITHUB_ENV
+
+      - name: Criar e enviar nova tag
+        run: |
+          if [[ "${{ github.event.pull_request.merged }}" != "true" ]]; then
+            echo "O PR não foi mesclado. Finalizando o fluxo."
+            exit 0
+          fi
+          
+          git tag "${{ env.new_tag }}"
+          git push origin "${{ env.new_tag }}"
