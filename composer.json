@@ -1,0 +1,24 @@
+{
+    "name": "code-fusion/laravel-ready",
+    "autoload": {
+        "psr-4": {
+            "CodeFusion\\LaravelReady\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Bruno Costa",
+            "email": "bhcosta90@gmail.com"
+        }
+    ],
+    "require": {
+        "php": "^8.1"
+    },
+    "require-dev": {
+        "laravel/prompts": "^0.3.0",
+        "symfony/process": "^7.2",
+        "guzzlehttp/guzzle": "^7.9",
+        "illuminate/collections": "^12.1",
+        "rector/rector": "^2.0"
+    }
+}
