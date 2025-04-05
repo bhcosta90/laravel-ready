@@ -120,5 +120,5 @@
             "sort_algorithm": "none"
         }
     },
-    "exclude": ["public", ".data"]
+    "exclude": ["public", ".data", "vendor"]
 }
