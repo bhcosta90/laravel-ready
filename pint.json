@@ -43,10 +43,6 @@
         "protected_to_private": true,
         "self_accessor": true,
         "self_static_accessor": true,
-<<<<<<< HEAD
-        "strict_comparison": true,
-=======
->>>>>>> bffdf065bf03c10d57038b7b8d0009bb53130ec5
         "final_class": true,
         "final_internal_class": true,
         "final_public_method_for_abstract_class": true,
@@ -123,9 +119,5 @@
             "sort_algorithm": "none"
         }
     },
-<<<<<<< HEAD
-    "exclude": ["public", ".data", "vendor"]
-=======
     "exclude": ["public", ".data"]
->>>>>>> bffdf065bf03c10d57038b7b8d0009bb53130ec5
 }
