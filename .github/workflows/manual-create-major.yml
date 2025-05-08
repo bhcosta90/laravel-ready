@@ -39,8 +39,8 @@ jobs:
             git push origin --delete "$tag"
           done
           
-          git tag "${version}.0"
-          git push origin "${version}.0"
+          git tag "${version}.${VERSION[1]}.0"
+          git push origin "${version}.${VERSION[1]}.0"
 
           VERSION[0]=$((VERSION[0] + 1))
           echo "${VERSION[0]}.${VERSION[1]}.${VERSION[2]}"
