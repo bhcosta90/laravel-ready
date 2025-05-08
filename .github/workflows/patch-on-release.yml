@@ -27,13 +27,14 @@ jobs:
           current_prefix="$major.$minor"
           echo "current: $current_prefix"
 
-#          current_patch=$(git tag --sort=-v:refname | grep -E "^$current_prefix\.[0-9]+$" | head -n 1)
-#          if [ -z "$current_patch" ]; then
-#            next_patch=$((patch + 1))
-#          else
-#            next_patch=$((current_patch + 1))
-#          fi
-#          new_tag="$major.$minor.$next_patch"
+          current_patch=$(git tag --sort=-v:refname | grep -E "^$current_prefix\.[0-9]+$" | head -n 1)
+          if [ -z "$current_patch" ]; then
+            next_patch=$((patch + 1))
+          else
+            next_patch=$((current_patch + 1))
+          fi
+          new_tag="$current_prefix.$next_patch"
+          echo "Next patch: $new_tag";
 #          echo "NEW_PATCH=$new_tag" >> $GITHUB_ENV
 
 #      - name: Create and push patch tag
