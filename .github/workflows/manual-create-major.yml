@@ -1,4 +1,4 @@
-name: Create Minor Tag After Build
+name: Create Major Tag After Build
 
 on:
 #  workflow_run:
@@ -11,11 +11,11 @@ jobs:
   approve:
     runs-on: ubuntu-latest
     environment:
-      name: approve-minor-release
+      name: approve-major-release
     steps:
-      - run: echo "Aguardando aprovação para criar nova versão minor..."
+      - run: echo "Aguardando aprovação para criar nova versão major..."
 
-  create_minor_version:
+  create_major_version:
     needs: approve
     runs-on: ubuntu-latest
     steps:
@@ -29,7 +29,7 @@ jobs:
           IFS='.' read -r -a VERSION <<< "${TAG_STABLE[0]}"
           echo "LATEST_TAG=${VERSION[0]}.${VERSION[1]}.${VERSION[2]}" >> $GITHUB_ENV
 
-      - name: Bump minor version
+      - name: Bump major version
         run: |
           IFS='.' read -r -a VERSION <<< "$LATEST_TAG"
           branch_release="${VERSION[0]}.${VERSION[1]}.${VERSION[2]}"
@@ -48,7 +48,7 @@ jobs:
           echo "NEW_MAJOR_TAG=$new_tag" >> $GITHUB_ENV
           echo "BRANCH_RELEASE=$branch_release" >> $GITHUB_ENV
 
-      - name: Create release branch and push new minor tag
+      - name: Create release branch and push new major tag
         run: |
           git config user.name "github-actions"
           git config user.email "actions@github.com"
