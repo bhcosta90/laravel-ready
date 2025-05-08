@@ -26,7 +26,9 @@ jobs:
         run: |
           git fetch --tags
           latest=$(git tag --sort=-v:refname | grep -E '^[0-9]+\.[0-9]+\.[0-9]+$' | head -n 1)
-          echo "LATEST_TAG=$latest" >> $GITHUB_ENV
+          IFS='-' read -r -a TAG_STABLE <<< "$latest"
+          IFS='.' read -r -a VERSION <<< "${TAG_STABLE[0]}"
+          echo "LATEST_TAG=${VERSION[0]}.${VERSION[1]}.${VERSION[2]}" >> $GITHUB_ENV
 
       - name: Bump minor version
         run: |
