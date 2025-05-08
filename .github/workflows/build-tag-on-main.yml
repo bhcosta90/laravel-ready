@@ -23,23 +23,13 @@ jobs:
           remote_tag=$(git ls-remote --tags origin 1.0.0 || true)
 
           if [ -z "$latest" ]; then
-            if [ -z "$remote_tag" ]; then
-              # Se não houver a tag no remoto, cria e empurra a tag 1.0.0
-              echo "No stable tag found. Creating initial tag 1.0.0"
-              git config user.name "github-actions"
-              git config user.email "actions@github.com"
-              git tag "1.0.0"
-              git push origin "1.0.0"
-            else
-              # Se a tag já existe no remoto, não fazer nada
-              echo "Tag 1.0.0 already exists on remote. Skipping creation."
-              echo "CREATED_INITIAL_TAG=false" >> $GITHUB_ENV
-            fi
+            echo "No stable tags found. Creating initial tag 1.0.0."
+            git tag 1.0.0
+            git push origin 1.0.0
             echo "CREATED_INITIAL_TAG=true" >> $GITHUB_ENV
-            echo "LATEST_TAG=1.0.0" >> $GITHUB_ENV
           else
+            echo "Latest stable tag: $latest"
             echo "LATEST_TAG=$latest" >> $GITHUB_ENV
-            echo "CREATED_INITIAL_TAG=false" >> $GITHUB_ENV
           fi
 
       - name: Skip if initial tag was just created
