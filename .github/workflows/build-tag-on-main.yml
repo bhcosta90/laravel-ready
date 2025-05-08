@@ -33,6 +33,7 @@ jobs:
             else
               # Se a tag já existe no remoto, não fazer nada
               echo "Tag 1.0.0 already exists on remote. Skipping creation."
+              echo "CREATED_INITIAL_TAG=false" >> $GITHUB_ENV
             fi
             echo "CREATED_INITIAL_TAG=true" >> $GITHUB_ENV
             echo "LATEST_TAG=1.0.0" >> $GITHUB_ENV
