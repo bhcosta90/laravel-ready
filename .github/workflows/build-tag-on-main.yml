@@ -16,13 +16,13 @@ jobs:
         run: |
           git fetch origin
           if git ls-remote --heads origin release/0.0.0 | grep release/0.0.0; then
-            echo "release_exists='true'" >> $GITHUB_OUTPUT
+            echo "release_exists=1" >> $GITHUB_OUTPUT
           else
-            echo "release_exists='false'" >> $GITHUB_OUTPUT
+            echo "release_exists=0" >> $GITHUB_OUTPUT
           fi
 
       - name: Create release branch and base tags if needed
-        if: steps.check_release_branch.outputs.release_exists == 'false'
+        if: steps.check_release_branch.outputs.release_exists == 0
         run: |
           git config user.name "github-actions"
           git config user.email "actions@github.com"
@@ -46,7 +46,7 @@ jobs:
           echo "LATEST_TAG=1.0.0" >> $GITHUB_ENV
 
       - name: Get latest stable version
-        if: steps.check_release_branch.outputs.release_exists == 'false'
+        if: steps.check_release_branch.outputs.release_exists == 0
         id: stable
         run: |
           git fetch --tags
@@ -55,7 +55,7 @@ jobs:
           echo "LATEST_TAG from stable step: ${{ env.LATEST_TAG }}"
 
       - name: Get next build number
-        if: steps.check_release_branch.outputs.release_exists == 'false'
+        if: steps.check_release_branch.outputs.release_exists == 0
         id: build
         run: |
           echo "LATEST_TAG from environment: ${{ env.LATEST_TAG }}"
@@ -68,7 +68,7 @@ jobs:
           echo "Next build tag will be: $NEW_TAG"
 
       - name: Push new tag
-        if: steps.check_release_branch.outputs.release_exists == 'false'
+        if: steps.check_release_branch.outputs.release_exists == 0
         run: |
           git tag "${{ env.NEW_TAG }}"
           git push origin "${{ env.NEW_TAG }}"
