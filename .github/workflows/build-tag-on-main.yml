@@ -46,24 +46,27 @@ jobs:
       - name: Get next build number
         if: env.CREATED_INITIAL_TAG != 'true'
         run: |
+          echo "Latest stable tag: $LATEST_TAG"
           prefix=$LATEST_TAG
           count=$(git tag --sort=-v:refname | grep -E "^$prefix-[0-9]+$" | wc -l)
           next=$((count + 1))
-          echo "NEW_TAG=$prefix-$next" >> $GITHUB_ENV
+          echo "New build number: $next"
+          NEW_TAG="$prefix-$next"
+          echo "NEW_TAG=$NEW_TAG" >> $GITHUB_ENV
           echo "Next build tag will be $NEW_TAG"
 
       - name: Create and push new build tag
         if: env.CREATED_INITIAL_TAG != 'true'
         run: |
           echo "Creating and pushing new build tag $NEW_TAG"
-          git config user.name "github-actions"
-          git config user.email "actions@github.com"
-
-          # Verificar se o nome da tag foi gerado corretamente
+          # Verificação de depuração adicional
           if [ -z "$NEW_TAG" ]; then
             echo "ERROR: NEW_TAG is empty. Cannot create tag."
             exit 1
           fi
+
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
 
           # Criar a tag de build e empurrar para o repositório remoto
           git tag "$NEW_TAG"
