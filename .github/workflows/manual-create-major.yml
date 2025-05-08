@@ -8,15 +8,7 @@ on:
   workflow_dispatch
 
 jobs:
-  approve:
-    runs-on: ubuntu-latest
-    environment:
-      name: approve-major-release
-    steps:
-      - run: echo "Aguardando aprovação para criar nova versão major..."
-
   create_major_version:
-    needs: approve
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3

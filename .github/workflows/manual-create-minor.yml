@@ -8,16 +8,7 @@ on:
   workflow_dispatch
 
 jobs:
-  approve:
-    runs-on: ubuntu-latest
-    environment:
-      name: approve-minor-release
-      # Isso pausa aqui até alguém aprovar manualmente
-    steps:
-      - run: echo "Aguardando aprovação para criar nova versão minor..."
-
   create_minor_version:
-    needs: approve
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
