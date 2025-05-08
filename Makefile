@@ -1,5 +1,8 @@
 date:
 	date '+%Y-%m-%d %H:%M:%S' > version
+	git add version
+	git commit -m 'feat: change version'
+	git push
 
 delete-tag:
 	git fetch
