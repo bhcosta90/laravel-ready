@@ -9,7 +9,6 @@ jobs:
   create_build_tag:
     if: "!startsWith(github.event.head_commit.message, 'release:')"
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v3
 
@@ -20,32 +19,20 @@ jobs:
           latest=$(git tag --sort=-v:refname | grep -E '^\d+\.\d+\.\d+$' | head -n 1 || true)
 
           if [ -z "$latest" ]; then
-            if [ -z "$(git tag)" ]; then
-              echo "No tags found. Creating initial tag 1.0.0"
-              git config user.name "github-actions"
-              git config user.email "actions@github.com"
-              git tag "1.0.0"
-              git push origin "1.0.0"
-            else
-              echo "Tags exist locally but no stable tag found."
-            fi
+            echo "No stable tag found. Creating initial tag 1.0.0"
+            git config user.name "github-actions"
+            git config user.email "actions@github.com"
+            git tag "1.0.0"
+            git push origin "1.0.0"
             echo "CREATED_INITIAL_TAG=true" >> $GITHUB_ENV
             echo "LATEST_TAG=1.0.0" >> $GITHUB_ENV
           else
             echo "LATEST_TAG=$latest" >> $GITHUB_ENV
-            echo "CREATED_INITIAL_TAG=false" >> $GITHUB_ENV
-          fi
-            fi
-            echo "CREATED_INITIAL_TAG=true" >> $GITHUB_ENV
-            echo "LATEST_TAG=1.0.0" >> $GITHUB_ENV
-          else
-            echo "LATEST_TAG=$latest" >> $GITHUB_ENV
-            echo "CREATED_INITIAL_TAG=false" >> $GITHUB_ENV
           fi
 
-      - name: Skip if initial tag was just created
+      - name: Stop if initial tag was just created
         if: env.CREATED_INITIAL_TAG == 'true'
-        run: echo "Initial tag created. No build tag needed yet."
+        run: echo "Initial tag created. Skipping build tag creation."
 
       - name: Get next build number
         if: env.CREATED_INITIAL_TAG != 'true'
@@ -53,7 +40,8 @@ jobs:
           prefix=$LATEST_TAG
           count=$(git tag --sort=-v:refname | grep -E "^$prefix-[0-9]+$" | wc -l)
           next=$((count + 1))
-          echo "NEW_TAG=$prefix-$next" >> $GITHUB_ENV
+          new_tag="$prefix-$next"
+          echo "NEW_TAG=$new_tag" >> $GITHUB_ENV
 
       - name: Create and push new build tag
         if: env.CREATED_INITIAL_TAG != 'true'
