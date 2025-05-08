@@ -25,10 +25,6 @@ final class RegisterCaptainHookCommand extends Command
             executeCommand('composer require captainhook/captainhook --dev');
         }
 
-        if (verifyInstallDependency('captainhook/hook-installer')) {
-            executeCommand('composer require captainhook/hook-installer --dev');
-        }
-
         $options = [
             './vendor/bin/pint --test' => 'pint',
             './vendor/bin/rector process' => 'rector',
@@ -66,6 +62,14 @@ final class RegisterCaptainHookCommand extends Command
 
         file_put_contents(base_path('captainhook.json'), json_encode($composer, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
         $this->info('CaptainHook already installed');
+
+        putenv('HOME=' . base_path('.git'));
+        executeCommand('vendor/bin/captainhook install --force');
+
+        if (verifyInstallDependency('captainhook/hook-installer')) {
+            executeCommand('composer require captainhook/hook-installer --dev');
+        }
+
     }
 
     protected function convertOptions(array $options) {
