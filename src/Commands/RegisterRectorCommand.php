@@ -36,8 +36,8 @@ final class RegisterRectorCommand extends Command
         );
 
         $composer = json_decode(file_get_contents(base_path('composer.json')));
-        $composer->scripts->{'rector:exec'} = './vendor/bin/rector process';
-        $composer->scripts->{'rector:dry'} = './vendor/bin/rector process --dry-run';
+        $composer->scripts->{'rector:exec'} = 'rector process';
+        $composer->scripts->{'rector:dry'} = 'rector process --dry-run';
         file_put_contents(base_path('composer.json'), json_encode($composer, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
 
         $this->info('Rector already installed');
