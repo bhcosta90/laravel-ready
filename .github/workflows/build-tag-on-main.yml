@@ -20,15 +20,21 @@ jobs:
           latest=$(git tag --sort=-v:refname | grep -E '^\d+\.\d+\.\d+$' | head -n 1 || true)
 
           if [ -z "$latest" ]; then
-            if git tag | grep -q "^1.0.0$"; then
-              echo "Tag 1.0.0 already exists locally. Pushing to remote..."
-              git push origin 1.0.0
-            else
-              echo "No stable tag found. Creating initial tag 1.0.0"
+            if [ -z "$(git tag)" ]; then
+              echo "No tags found. Creating initial tag 1.0.0"
               git config user.name "github-actions"
               git config user.email "actions@github.com"
               git tag "1.0.0"
               git push origin "1.0.0"
+            else
+              echo "Tags exist locally but no stable tag found."
+            fi
+            echo "CREATED_INITIAL_TAG=true" >> $GITHUB_ENV
+            echo "LATEST_TAG=1.0.0" >> $GITHUB_ENV
+          else
+            echo "LATEST_TAG=$latest" >> $GITHUB_ENV
+            echo "CREATED_INITIAL_TAG=false" >> $GITHUB_ENV
+          fi
             fi
             echo "CREATED_INITIAL_TAG=true" >> $GITHUB_ENV
             echo "LATEST_TAG=1.0.0" >> $GITHUB_ENV
