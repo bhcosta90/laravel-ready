@@ -1,10 +1,11 @@
 name: Create Minor Tag After Build
 
 on:
-  workflow_run:
-    workflows: ["Create Build Tag on Merge to Main"]
-    types:
-      - completed
+#  workflow_run:
+#    workflows: ["Create Build Tag on Merge to Main"]
+#    types:
+#      - completed
+  workflow_dispatch
 
 jobs:
   approve:
@@ -42,7 +43,9 @@ jobs:
         run: |
           git config user.name "github-actions"
           git config user.email "actions@github.com"
+
           git checkout -b "release/${{ env.BRANCH_RELEASE }}"
+          git push origin "release/${{ env.BRANCH_RELEASE }}"
+
           git tag "${{ env.NEW_MINOR_TAG }}"
-          git push origin "release/${{ env.NEW_MINOR_TAG }}"
           git push origin "${{ env.NEW_MINOR_TAG }}"
