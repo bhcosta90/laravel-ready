@@ -1,4 +1,3 @@
-# .github/workflows/patch-on-release.yml
 name: Create Patch Tag on Release Merge
 
 on:
@@ -26,18 +25,18 @@ jobs:
           minor=$(echo "$RELEASE_BASE" | cut -d. -f2)
           patch=$(echo "$RELEASE_BASE" | cut -d. -f3)
           current_prefix="$major.$minor"
-          current_patch=$(git tag --sort=-v:refname | grep -E "^$current_prefix\.[0-9]+$" | tail -n 1 | cut -d. -f3)
-          if [ -z "$current_patch" ]; then
-            next_patch=$((patch + 1))
-          else
-            next_patch=$((current_patch + 1))
-          fi
-          new_tag="$major.$minor.$next_patch"
+          echo "current: $current_prefix"
+
+          current_patch=$(git tag --sort=-v:refname | grep -E "^$current_prefix\.[0-9]+$" | head -n 1)
+          IFS='.' read -r -a VERSION <<< "$current_patch"
+          VERSION[2]=$((VERSION[2] + 1))
+          new_tag="${VERSION[0]}.${VERSION[1]}.${VERSION[2]}"
+          echo "Next patch: $new_tag";
           echo "NEW_PATCH=$new_tag" >> $GITHUB_ENV
 
       - name: Create and push patch tag
         run: |
           git config user.name "github-actions"
           git config user.email "actions@github.com"
-          git tag "$NEW_PATCH"
-          git push origin "$NEW_PATCH"
+          git tag "${{ env.NEW_PATCH }}"
+          git push origin "${{ env.NEW_PATCH }}"
