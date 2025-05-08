@@ -1,3 +1,4 @@
+# .github/workflows/build-tag-on-main.yml
 name: Create Build Tag on Merge to Main
 
 on:
@@ -12,44 +13,23 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Ensure at least one stable tag exists
-        id: check_or_create
+      - name: Get latest stable version
+        id: stable
         run: |
           git fetch --tags
-          latest=$(git tag --sort=-v:refname | grep -E '^\d+\.\d+\.\d+$' | head -n 1 || true)
-
-          if [ -z "$latest" ]; then
-            if git tag | grep -q "^1.0.0$"; then
-              echo "Tag 1.0.0 already exists locally. Pushing to remote..."
-              git push origin 1.0.0
-            else
-              echo "No stable tag found. Creating initial tag 1.0.0"
-              git config user.name "github-actions"
-              git config user.email "actions@github.com"
-              git tag "1.0.0"
-              git push origin "1.0.0"
-            fi
-            echo "CREATED_INITIAL_TAG=true" >> $GITHUB_ENV
-            echo "LATEST_TAG=1.0.0" >> $GITHUB_ENV
-          else
-            echo "LATEST_TAG=$latest" >> $GITHUB_ENV
-          fi
-
-      - name: Stop if initial tag was just created
-        if: env.CREATED_INITIAL_TAG == 'true'
-        run: echo "Initial tag created. Skipping build tag creation."
+          latest=$(git tag --sort=-v:refname | grep -E '^\d+\.\d+\.\d+$' | head -n 1)
+          echo "LATEST_TAG=$latest" >> $GITHUB_ENV
 
       - name: Get next build number
-        if: env.CREATED_INITIAL_TAG != 'true'
+        id: build
         run: |
           prefix=$LATEST_TAG
+          git fetch --tags
           count=$(git tag --sort=-v:refname | grep -E "^$prefix-[0-9]+$" | wc -l)
           next=$((count + 1))
-          new_tag="$prefix-$next"
-          echo "NEW_TAG=$new_tag" >> $GITHUB_ENV
+          echo "NEW_TAG=$prefix-$next" >> $GITHUB_ENV
 
       - name: Create and push new build tag
-        if: env.CREATED_INITIAL_TAG != 'true'
         run: |
           git config user.name "github-actions"
           git config user.email "actions@github.com"
