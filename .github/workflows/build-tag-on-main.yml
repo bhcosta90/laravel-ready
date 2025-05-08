@@ -16,9 +16,9 @@ jobs:
         run: |
           git fetch origin
           if git ls-remote --heads origin release/0.0.0 | grep release/0.0.0; then
-            echo "release_exists=true" >> $GITHUB_OUTPUT
+            echo "release_exists='true'" >> $GITHUB_OUTPUT
           else
-            echo "release_exists=false" >> $GITHUB_OUTPUT
+            echo "release_exists='false'" >> $GITHUB_OUTPUT
           fi
 
       - name: Create release branch and base tags if needed
