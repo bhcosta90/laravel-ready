@@ -54,6 +54,7 @@ jobs:
           echo "LATEST_TAG from stable step: ${{ env.LATEST_TAG }}"
 
       - name: Get next build number
+        if: env.RELEASE_BRANCH_EXISTS == 'false'
         id: build
         run: |
           echo "LATEST_TAG from environment: ${{ env.LATEST_TAG }}"
