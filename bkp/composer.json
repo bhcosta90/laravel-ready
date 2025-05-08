@@ -1,8 +1,8 @@
 {
-    "name": "bhcosta90/laravel-ready",
+    "name": "code-fusion/laravel-ready",
     "autoload": {
         "psr-4": {
-            "Bhcosta90\\LaravelReady\\": "src/"
+            "CodeFusion\\LaravelReady\\": "src/"
         }
     },
     "authors": [
@@ -11,7 +11,9 @@
             "email": "bhcosta90@gmail.com"
         }
     ],
-    "minimum-stability": "stable",
+    "require": {
+        "php": "^8.1"
+    },
     "require-dev": {
         "laravel/prompts": "^0.3.0",
         "symfony/process": "^7.2",
