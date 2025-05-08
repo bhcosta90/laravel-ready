@@ -67,6 +67,7 @@ jobs:
           echo "Next build tag will be: $NEW_TAG"
 
       - name: Push new tag
+        if: env.RELEASE_BRANCH_EXISTS == 'false'
         run: |
           git tag "${{ env.NEW_TAG }}"
           git push origin "${{ env.NEW_TAG }}"
