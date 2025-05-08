@@ -35,8 +35,7 @@ jobs:
           echo "minor=${VERSION[1]}"
           echo "patch=${VERSION[2]}"
           
-          echo "LATEST_TAG=${VERSION[0]}.${VERSION[1]}.${VERSION[2]}" >> $GITHUB_ENV
-          echo "LATEST_TAG from stable step: $LATEST_TAG"
+          echo "LATEST_TAG=$version.$minor.$patch"
 
 #      - name: Get next build number
 #        id: build
