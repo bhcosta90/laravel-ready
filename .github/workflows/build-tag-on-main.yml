@@ -1,3 +1,4 @@
+# .github/workflows/build-tag-on-main.yml
 name: Create Build Tag on Merge to Main
 
 on:
@@ -9,65 +10,28 @@ jobs:
   create_build_tag:
     if: "!startsWith(github.event.head_commit.message, 'release:')"
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v3
 
-      - name: Ensure at least one stable tag exists
-        id: check_or_create
+      - name: Get latest stable version
+        id: stable
         run: |
           git fetch --tags
-
-          # Verificar se a tag 1.0.0 existe no remoto
-          remote_tag=$(git ls-remote --tags origin 1.0.0 || true)
-
-          if [ -z "$remote_tag" ]; then
-            # Se a tag 1.0.0 não existir no remoto, criar e empurrar a tag inicial
-            echo "No remote tag 1.0.0 found. Creating initial tag 1.0.0."
-            git config user.name "github-actions"
-            git config user.email "actions@github.com"
-            git tag -a 1.0.0 -m "Initial tag 1.0.0"
-            git push origin 1.0.0
-            echo "CREATED_INITIAL_TAG=true" >> $GITHUB_ENV
-            echo "LATEST_TAG=1.0.0" >> $GITHUB_ENV
-          else
-            # Se a tag já existe no remoto, pegar a última tag estável
-            echo "Remote tag 1.0.0 already exists."
-            latest=$(git tag --sort=-v:refname | grep -E '^\d+\.\d+\.\d+$' | head -n 1 || true)
-            echo "Latest stable tag: $latest"
-            echo "LATEST_TAG=$latest" >> $GITHUB_ENV
-            echo "CREATED_INITIAL_TAG=false" >> $GITHUB_ENV
-          fi
-
-      - name: Skip if initial tag was just created
-        if: env.CREATED_INITIAL_TAG == 'true'
-        run: echo "Initial tag created. Skipping build tag creation."
+          latest=$(git tag --sort=-v:refname | grep -E '^\d+\.\d+\.\d+$' | head -n 1)
+          echo "LATEST_TAG=$latest" >> $GITHUB_ENV
 
       - name: Get next build number
-        if: env.CREATED_INITIAL_TAG != 'true'
+        id: build
         run: |
-          echo "Latest stable tag: $LATEST_TAG"
           prefix=$LATEST_TAG
+          git fetch --tags
           count=$(git tag --sort=-v:refname | grep -E "^$prefix-[0-9]+$" | wc -l)
           next=$((count + 1))
-          echo "New build number: $next"
-          NEW_TAG="$prefix-$next"
-          echo "NEW_TAG=$NEW_TAG" >> $GITHUB_ENV
-          echo "Next build tag will be $NEW_TAG"
+          echo "NEW_TAG=$prefix-$next" >> $GITHUB_ENV
 
       - name: Create and push new build tag
-        if: env.CREATED_INITIAL_TAG != 'true'
         run: |
-          echo "Creating and pushing new build tag $NEW_TAG"
-          # Verificação de depuração adicional
-          if [ -z "$NEW_TAG" ]; then
-            echo "ERROR: NEW_TAG is empty. Cannot create tag."
-            exit 1
-          fi
-
           git config user.name "github-actions"
           git config user.email "actions@github.com"
-
-          # Criar a tag de build e empurrar para o repositório remoto
-          git tag -a "$NEW_TAG" -m "Creating the tag $NEW_TAG"
+          git tag "$NEW_TAG"
           git push origin "$NEW_TAG"
