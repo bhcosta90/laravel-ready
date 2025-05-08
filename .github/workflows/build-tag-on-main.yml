@@ -30,11 +30,13 @@ jobs:
           latest=$(git tag --list --sort=-v:refname | grep -E '^[0-9]+\.[0-9]+\.[0-9]+(-[0-9]+)?$' | head -n 1)
           IFS='-' read -r -a TAG_STABLE <<< "$latest"
           IFS='.' read -r -a VERSION <<< "${TAG_STABLE[0]}"
+
           echo "version=${VERSION[0]}"
-          
+          echo "minor=${VERSION[1]}"
+          echo "patch=${VERSION[2]}"
           
           echo "LATEST_TAG=${VERSION[0]}.${VERSION[1]}.${VERSION[2]}" >> $GITHUB_ENV
-          echo "LATEST_TAG from stable step: ${{ env.LATEST_TAG }}"
+          echo "LATEST_TAG from stable step: $LATEST_TAG"
 
 #      - name: Get next build number
 #        id: build
