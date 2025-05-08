@@ -14,6 +14,7 @@ jobs:
       - name: Create initial tag if no tag exists
         id: first_tag
         run: |
+          git fetch --tags
           TAG=$(git tag --list --sort=-v:refname | grep -E '0.0.0' | head -n 1)
           if [[ "TAG" -eq 0 ]]; then
             TAG="0.0.0"
