@@ -1,4 +1,3 @@
-# .github/workflows/patch-on-release.yml
 name: Create Patch Tag on Release Merge
 
 on:
