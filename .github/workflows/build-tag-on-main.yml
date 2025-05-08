@@ -20,13 +20,13 @@ jobs:
           latest=$(git tag --sort=-v:refname | grep -E '^\d+\.\d+\.\d+$' | head -n 1 || true)
 
           if [ -z "$latest" ]; then
-            # Verificar se a tag 1.0.0 já existe
+            # Se não existir nenhuma tag estável
             if git tag | grep -q "^1.0.0$"; then
-              # Se a tag já existe localmente, empurrar para o remoto
+              # Se a tag 1.0.0 já existe localmente, empurrar para o remoto
               echo "Tag 1.0.0 already exists locally. Pushing to remote..."
               git push origin 1.0.0
             else
-              # Criar e empurrar a tag 1.0.0 caso não exista
+              # Se não existir, cria e empurra a tag 1.0.0
               echo "No stable tag found. Creating initial tag 1.0.0"
               git config user.name "github-actions"
               git config user.email "actions@github.com"
@@ -42,7 +42,7 @@ jobs:
 
       - name: Skip if initial tag was just created
         if: env.CREATED_INITIAL_TAG == 'true'
-        run: echo "Initial tag created. No build tag needed yet."
+        run: echo "Initial tag created. Skipping build tag creation."
 
       - name: Get next build number
         if: env.CREATED_INITIAL_TAG != 'true'
