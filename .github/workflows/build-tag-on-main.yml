@@ -16,7 +16,7 @@ jobs:
         id: stable
         run: |
           git fetch --tags
-          latest=$(git tag --list --sort=-v:refname | grep -E '^[0-9]+\.[0-9]+\.[0-9]+$' | head -n 1 | echo "")
+          latest=$(git tag --list --sort=-v:refname | grep -E '^[0-9]+\.[0-9]+\.[0-9]+$' | head -n 1)
           echo "LATEST_TAG=$latest" >> $GITHUB_ENV
           echo "LATEST_TAG from stable step: ${{ env.LATEST_TAG }}"
 
