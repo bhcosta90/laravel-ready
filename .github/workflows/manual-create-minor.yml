@@ -7,17 +7,16 @@ on:
       - completed
 
 jobs:
-  wait_for_approval:
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+  approve:
     runs-on: ubuntu-latest
     environment:
       name: approve-minor-release
-      url: https://github.com/${{ github.repository }}/actions
+      # Isso pausa aqui até alguém aprovar manualmente
     steps:
-      - run: echo "Waiting for manual approval to create minor version..."
+      - run: echo "Aguardando aprovação para criar nova versão minor..."
 
   create_minor_version:
-    needs: wait_for_approval
+    needs: approve
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
