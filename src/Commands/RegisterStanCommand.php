@@ -25,7 +25,7 @@ final class RegisterStanCommand extends Command
 
         $endpoint = text(
             'What address is your stan configuration?',
-            default: 'https://raw.githubusercontent.com/bhcosta90/laravel-ready/main/fixtures/phpstan.neon'
+            default: 'https://raw.githubusercontent.com/bhcosta90/laravel-ready/refs/heads/main/fixtures/phpstan.neon'
         );
 
         $content = (new Client())->get($endpoint);

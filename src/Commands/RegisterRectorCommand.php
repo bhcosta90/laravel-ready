@@ -25,7 +25,7 @@ final class RegisterRectorCommand extends Command
 
         $endpoint = text(
             'What address is your php rector configuration?',
-            default: 'https://raw.githubusercontent.com/bhcosta90/laravel-ready/main/fixtures/rector.php'
+            default: 'https://raw.githubusercontent.com/bhcosta90/laravel-ready/refs/heads/main/fixtures/rector.php'
         );
 
         $content = (new Client())->get($endpoint);

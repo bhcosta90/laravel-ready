@@ -25,7 +25,7 @@ final class RegisterPintCommand extends Command
 
         $endpoint = text(
             'What address is your pint configuration?',
-            default: 'https://raw.githubusercontent.com/bhcosta90/laravel-ready/main/fixtures/pint.json'
+            default: 'https://raw.githubusercontent.com/bhcosta90/laravel-ready/refs/heads/main/fixtures/pint.json'
         );
 
         $content = (new Client())->get($endpoint);
