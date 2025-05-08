@@ -11,7 +11,7 @@ use function Laravel\Prompts\text;
 
 final class RegisterRectorCommand extends Command
 {
-    protected $signature = 'ready:register-stan';
+    protected $signature = 'ready:register-rector';
 
     protected $description = 'Install Rector for your application';
 
