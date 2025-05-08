@@ -32,7 +32,7 @@ jobs:
           IFS='.' read -r -a VERSION <<< "$TAG_STABLE"
           
           echo "LATEST_TAG=${VERSION[0]}.${VERSION[1]}.${VERSION[2]}" >> $GITHUB_ENV
-          echo "LATEST_TAG from stable step: $LATEST_TAG"
+          echo "LATEST_TAG from stable step: ${{ env.LATEST_TAG }}"
 
 #      - name: Get next build number
 #        id: build
