@@ -1,4 +1,3 @@
-# .github/workflows/build-tag-on-main.yml
 name: Create Build Tag on Merge to Main
 
 on:
@@ -10,26 +9,48 @@ jobs:
   create_build_tag:
     if: "!startsWith(github.event.head_commit.message, 'release:')"
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v3
 
-      - name: Get latest stable version
-        id: stable
+      - name: Ensure at least one stable tag exists
+        id: check_or_create
         run: |
           git fetch --tags
-          latest=$(git tag --sort=-v:refname | grep -E '^\d+\.\d+\.\d+$' | head -n 1)
-          echo "LATEST_TAG=$latest" >> $GITHUB_ENV
+          latest=$(git tag --sort=-v:refname | grep -E '^\d+\.\d+\.\d+$' | head -n 1 || true)
+
+          if [ -z "$latest" ]; then
+            if git tag | grep -q "^1.0.0$"; then
+              echo "Tag 1.0.0 already exists locally. Pushing to remote..."
+              git push origin 1.0.0
+            else
+              echo "No stable tag found. Creating initial tag 1.0.0"
+              git config user.name "github-actions"
+              git config user.email "actions@github.com"
+              git tag "1.0.0"
+              git push origin "1.0.0"
+            fi
+            echo "CREATED_INITIAL_TAG=true" >> $GITHUB_ENV
+            echo "LATEST_TAG=1.0.0" >> $GITHUB_ENV
+          else
+            echo "LATEST_TAG=$latest" >> $GITHUB_ENV
+            echo "CREATED_INITIAL_TAG=false" >> $GITHUB_ENV
+          fi
+
+      - name: Skip if initial tag was just created
+        if: env.CREATED_INITIAL_TAG == 'true'
+        run: echo "Initial tag created. No build tag needed yet."
 
       - name: Get next build number
-        id: build
+        if: env.CREATED_INITIAL_TAG != 'true'
         run: |
           prefix=$LATEST_TAG
-          git fetch --tags
           count=$(git tag --sort=-v:refname | grep -E "^$prefix-[0-9]+$" | wc -l)
           next=$((count + 1))
           echo "NEW_TAG=$prefix-$next" >> $GITHUB_ENV
 
       - name: Create and push new build tag
+        if: env.CREATED_INITIAL_TAG != 'true'
         run: |
           git config user.name "github-actions"
           git config user.email "actions@github.com"
