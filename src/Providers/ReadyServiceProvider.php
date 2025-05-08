@@ -14,6 +14,7 @@ final class ReadyServiceProvider extends ServiceProvider
         $this->commands([
             Commands\RegisterDebugBarCommand::class,
             Commands\RegisterPintCommand::class,
+            Commands\RegisterStanCommand::class,
             Commands\RegisterRectorCommand::class,
         ]);
     }
