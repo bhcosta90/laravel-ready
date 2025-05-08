@@ -69,5 +69,5 @@ jobs:
           git config user.email "actions@github.com"
 
           # Criar a tag de build e empurrar para o repositório remoto
-          git tag "$NEW_TAG"
+          git tag -a "$NEW_TAG" -m "Creating the tag $NEW_TAG"
           git push origin "$NEW_TAG"
