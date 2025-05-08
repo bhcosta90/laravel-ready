@@ -57,5 +57,5 @@ jobs:
           git checkout -b "release/${{ env.BRANCH_RELEASE }}"
           git push origin "release/${{ env.BRANCH_RELEASE }}"
 
-          git tag "${{ env.NEW_MINOR_TAG }}"
-          git push origin "${{ env.NEW_MINOR_TAG }}"
+          git tag "${{ env.NEW_MINOR_TAG }}-0"
+          git push origin "${{ env.NEW_MINOR_TAG }}-0"
