@@ -33,9 +33,9 @@ jobs:
         run: |
           IFS='.' read -r -a VERSION <<< "$LATEST_TAG"
           branch_release="${VERSION[0]}.${VERSION[1]}.${VERSION[2]}"
-          version=${VERSION[0]}.${VERSION[1]}
+          version=${VERSION[0]}
           
-          for tag in $(git tag -l "${version}.0-*"); do
+          for tag in $(git tag -l "${version}.*.*-*"); do
             git push origin --delete "$tag"
           done
           
