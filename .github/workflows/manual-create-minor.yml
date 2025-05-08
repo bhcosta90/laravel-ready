@@ -1,10 +1,7 @@
 name: Create Minor Tag After Build
 
 on:
-  workflow_run:
-    workflows: ["Create Build Tag on Merge to Main"]
-    types:
-      - completed
+  workflow_dispatch
 
 jobs:
   create_minor:
@@ -16,21 +13,22 @@ jobs:
       - name: Get latest stable version
         run: |
           git fetch --tags
-          latest=$(git tag --sort=-v:refname | grep -E '^\d+\.\d+\.\d+$' | head -n 1)
+          latest=$(git tag --sort=-v:refname | head -n 1)
           echo "LATEST_TAG=$latest" >> $GITHUB_ENV
 
       - name: Bump minor version
         run: |
-          IFS='.' read -r major minor patch <<< "$LATEST_TAG"
-          new_minor=$((minor + 1))
-          new_tag="${major}.${new_minor}.0"
-          echo "NEW_MINOR_TAG=$new_tag" >> $GITHUB_ENV
-
-      - name: Create release branch and push new minor tag
-        run: |
-          git config user.name "github-actions"
-          git config user.email "actions@github.com"
-          git checkout -b "release/${{ env.NEW_MINOR_TAG }}"
-          git tag "${{ env.NEW_MINOR_TAG }}"
-          git push origin "release/${{ env.NEW_MINOR_TAG }}"
-          git push origin "${{ env.NEW_MINOR_TAG }}"
+          IFS='.' read -r -a VERSION <<< "$LATEST_TAG"
+          echo "${VERSION[0]}.${VERSION[1]}.${VERSION[2]}"
+#          new_minor=$((minor + 1))
+#          new_tag="${major}.${new_minor}.0"
+#          echo "NEW_MINOR_TAG=$new_tag" >> $GITHUB_ENV
+#
+#      - name: Create release branch and push new minor tag
+#        run: |
+#          git config user.name "github-actions"
+#          git config user.email "actions@github.com"
+#          git checkout -b "release/${{ env.NEW_MINOR_TAG }}"
+#          git tag "${{ env.NEW_MINOR_TAG }}"
+#          git push origin "release/${{ env.NEW_MINOR_TAG }}"
+#          git push origin "${{ env.NEW_MINOR_TAG }}"
