@@ -41,13 +41,13 @@ jobs:
         id: build
         run: |
           echo "LATEST_TAG from environment: ${{ env.LATEST_TAG }}"
-#          prefix=$LATEST_TAG
-#          git fetch --tags
-#          count=$(git tag --sort=-v:refname | grep -E "^$prefix-[0-9]+$" | wc -l)
-#          next=$((count + 1))
-#          NEW_TAG="$prefix-$next"
-#          echo "NEW_TAG=$NEW_TAG" >> $GITHUB_ENV
-#          echo "Next build tag will be: $NEW_TAG"
+          prefix=$LATEST_TAG
+          git fetch --tags
+          count=$(git tag --sort=-v:refname | grep -E "^$prefix-[0-9]+$" | wc -l)
+          next=$((count + 1))
+          NEW_TAG="$prefix-$next"
+          echo "NEW_TAG=$NEW_TAG" >> $GITHUB_ENV
+          echo "Next build tag will be: $NEW_TAG"
 #
 #      - name: Push new tag
 #        run: |
