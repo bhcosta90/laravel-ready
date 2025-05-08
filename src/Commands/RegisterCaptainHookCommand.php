@@ -65,9 +65,6 @@ final class RegisterCaptainHookCommand extends Command
         ];
 
         file_put_contents(base_path('captainhook.json'), json_encode($composer, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
-
-        putenv('HOME=' . base_path('.git'));
-        executeCommand('vendor/bin/captainhook install --force');
         $this->info('CaptainHook already installed');
     }
 
