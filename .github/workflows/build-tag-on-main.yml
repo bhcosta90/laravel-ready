@@ -46,6 +46,7 @@ jobs:
           echo "LATEST_TAG=1.0.0" >> $GITHUB_ENV
 
       - name: Get latest stable version
+        if: env.RELEASE_BRANCH_EXISTS == 'false'
         id: stable
         run: |
           git fetch --tags
