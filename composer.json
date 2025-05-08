@@ -2,7 +2,7 @@
     "name": "bhcosta90/laravel-ready",
     "autoload": {
         "psr-4": {
-            "Bhcosta90\\LaravelReady\\": "src/"
+            "Costa\\Ready\\": "src/"
         }
     },
     "authors": [
