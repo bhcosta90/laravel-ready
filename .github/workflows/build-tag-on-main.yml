@@ -15,13 +15,14 @@ jobs:
         id: first_tag
         run: |
           git fetch --tags
-          TAG=$(git tag --list --sort=-v:refname | grep -E '0.0.0-0' | head -n 1)
-          if [[ "TAG" -eq 0 ]]; then
+          if [[ -z $(git tag --list) ]]; then
             TAG="0.0.0-0"
-            echo "No tag found. Creating initial tag: $TAG"
+            echo "No tags found. Creating initial tag: $TAG"
             git tag "$TAG"
             git push origin "$TAG"
             echo "Tag created successfully: $TAG"
+          else
+            echo "Tags already exist. Skipping tag creation."
           fi
       - name: Get latest stable version
         id: stable
