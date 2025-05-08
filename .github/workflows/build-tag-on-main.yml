@@ -21,11 +21,14 @@ jobs:
             git tag "$TAG"
             git push origin "$TAG"
             echo "Tag created successfully: $TAG"
+            echo "exists=false" >> $GITHUB_OUTPUT
           else
             echo "Tags already exist. Skipping tag creation."
+            echo "exists=true" >> $GITHUB_OUTPUT
           fi
       - name: Get latest stable version
         id: stable
+        if: steps.first_tag.outputs.exists == 'true'
         run: |
           git fetch --tags
           latest=$(git tag --list --sort=-v:refname | grep -E '^[0-9]+\.[0-9]+\.[0-9]+(-[0-9]+)?$' | head -n 1)
@@ -40,6 +43,7 @@ jobs:
 
       - name: Get next build number
         id: build
+        if: steps.first_tag.outputs.exists == 'true'
         run: |
           echo "LATEST_TAG from environment: ${{ env.LATEST_TAG }}"
           prefix=$LATEST_TAG
@@ -50,6 +54,7 @@ jobs:
           echo "Next build tag will be: $NEW_TAG"
 
       - name: Push new tag
+        if: steps.first_tag.outputs.exists == 'true'
         run: |
           git tag "${{ env.NEW_TAG }}"
           git push origin "${{ env.NEW_TAG }}"
