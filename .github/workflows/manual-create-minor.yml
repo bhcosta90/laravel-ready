@@ -15,6 +15,19 @@ jobs:
       url: https://github.com/${{ github.repository }}/actions
     steps:
       - run: echo "Waiting for manual approval to create minor version..."
+
+  create_minor_version:
+    needs: wait_for_approval
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Get latest stable version
+        run: |
+          git fetch --tags
+          latest=$(git tag --sort=-v:refname | grep -E '^\d+\.\d+\.\d+$' | head -n 1)
+          echo "LATEST_TAG=$latest" >> $GITHUB_ENV
+
       - name: Bump minor version
         run: |
           IFS='.' read -r -a VERSION <<< "$LATEST_TAG"
