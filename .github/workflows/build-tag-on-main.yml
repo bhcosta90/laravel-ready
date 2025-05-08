@@ -32,6 +32,11 @@ jobs:
           echo "NEW_TAG=$NEW_TAG" >> $GITHUB_ENV
           echo "Next build tag will be: $NEW_TAG"
 
+      - name: Push new tag
+        run: |
+          git tag "${{ env.NEW_TAG }}"
+          git push origin "${{ env.NEW_TAG }}"
+
 #      - name: Configure Git User
 #        run: |
 #          git config --global user.name "github-actions"
