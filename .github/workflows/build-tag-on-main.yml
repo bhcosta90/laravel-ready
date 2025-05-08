@@ -23,7 +23,7 @@ jobs:
       - name: Get next build number
         id: build
         run: |
-          echo "LATEST_TAG from environment: $LATEST_TAG"
+          echo "LATEST_TAG from environment: ${{ env.LATEST_TAG }}"
 #          prefix=$LATEST_TAG
 #          git fetch --tags
 #          count=$(git tag --sort=-v:refname | grep -E "^$prefix-[0-9]+$" | wc -l)
