@@ -11,6 +11,40 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
+      - name: Check if release branch exists
+        id: check_release_branch
+        run: |
+          git fetch origin
+          if git ls-remote --heads origin release/0.0.0 | grep release/0.0.0; then
+            echo "RELEASE_BRANCH_EXISTS=true" >> $GITHUB_ENV
+          else
+            echo "RELEASE_BRANCH_EXISTS=false" >> $GITHUB_ENV
+          fi
+
+      - name: Create release branch and base tags if needed
+        if: env.RELEASE_BRANCH_EXISTS == 'false'
+        run: |
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+
+          echo "Creating release/0.0.0 branch and base tags..."
+
+          # Create the branch from current main
+          git checkout -b release/0.0.0
+
+          # Create 0.0.0 tag
+          git tag 0.0.0
+
+          # Create 1.0.0 tag
+          git tag 1.0.0
+
+          # Push all
+          git push origin release/0.0.0
+          git push origin 0.0.0
+          git push origin 1.0.0
+
+          echo "LATEST_TAG=1.0.0" >> $GITHUB_ENV
+
       - name: Get latest stable version
         id: stable
         run: |
