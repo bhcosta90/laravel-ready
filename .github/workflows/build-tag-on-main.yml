@@ -28,27 +28,24 @@ jobs:
         run: |
           git fetch --tags
           latest=$(git tag --list --sort=-v:refname | grep -E '^[0-9]+\.[0-9]+\.[0-9]+(-[0-9]+)?$' | head -n 1)
-          IFS='.' read -r -a VERSION <<< "$latest"
+          IFS='.' read -r -a VERSION <<< "$LATEST_TAG"
           
           echo "LATEST_TAG=${VERSION[0]}.${VERSION[1]}.${VERSION[2]}" >> $GITHUB_ENV
           echo "LATEST_TAG from stable step: ${{ env.LATEST_TAG }}"
 
-      - name: Get next build number
-        id: build
-        run: |
-          echo "LATEST_TAG from environment: ${{ env.LATEST_TAG }}"
-          prefix=$LATEST_TAG
-          git fetch --tags
-          count=$(git tag --sort=-v:refname | grep -E "^$prefix-[0-9]+$" | wc -l)
-          next=$((count + 1))
-          
-          IFS='.' read -r -a VERSION <<< "${{ env.LATEST_TAG }}"
-          
-          NEW_TAG="${VERSION[0]}.${VERSION[1]}.${VERSION[2]}-$next"
-          echo "NEW_TAG=$NEW_TAG" >> $GITHUB_ENV
-          echo "Next build tag will be: $NEW_TAG"
-
-      - name: Push new tag
-        run: |
-          git tag "${{ env.NEW_TAG }}"
-          git push origin "${{ env.NEW_TAG }}"
+#      - name: Get next build number
+#        id: build
+#        run: |
+#          echo "LATEST_TAG from environment: ${{ env.LATEST_TAG }}"
+#          prefix=$LATEST_TAG
+#          git fetch --tags
+#          count=$(git tag --sort=-v:refname | grep -E "^$prefix-[0-9]+$" | wc -l)
+#          next=$((count + 1))
+#          NEW_TAG="$prefix-$next"
+#          echo "NEW_TAG=$NEW_TAG" >> $GITHUB_ENV
+#          echo "Next build tag will be: $NEW_TAG"
+#
+#      - name: Push new tag
+#        run: |
+#          git tag "${{ env.NEW_TAG }}"
+#          git push origin "${{ env.NEW_TAG }}"
