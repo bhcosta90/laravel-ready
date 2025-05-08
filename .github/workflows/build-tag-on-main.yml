@@ -11,42 +11,18 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Check if release branch exists
-        id: check_release_branch
+      - name: Create initial tag if no tag exists
+        id: first_tag
         run: |
-          git fetch origin
-          if git ls-remote --heads origin release/0.0.0 | grep release/0.0.0; then
-            echo "release_exists=1" >> $GITHUB_OUTPUT
-          else
-            echo "release_exists=0" >> $GITHUB_OUTPUT
+          TAG=$(git tag --list --sort=-v:refname | grep -E '^(dev-)?[0-9]+\.[0-9]+\.[0-9]+$' | sed 's/^dev-//' | head -n 1)
+          if [[ -z "$TAG" ]]; then
+            TAG="0.0.0"
+            echo "No tag found. Creating initial tag: $TAG"
+            git tag "$TAG"
+            git push origin "$TAG"
+            echo "Tag created successfully: $TAG"
           fi
-
-      - name: Create release branch and base tags if needed
-        if: steps.check_release_branch.outputs.release_exists == 0
-        run: |
-          git config user.name "github-actions"
-          git config user.email "actions@github.com"
-
-          echo "Creating release/0.0.0 branch and base tags..."
-
-          # Create the branch from current main
-          git checkout -b release/0.0.0
-
-          # Create 0.0.0 tag
-          git tag 0.0.0
-
-          # Create 1.0.0 tag
-          git tag 1.0.0
-
-          # Push all
-          git push origin release/0.0.0
-          git push origin 0.0.0
-          git push origin 1.0.0
-
-          echo "LATEST_TAG=1.0.0" >> $GITHUB_ENV
-
       - name: Get latest stable version
-        if: steps.check_release_branch.outputs.release_exists == 0
         id: stable
         run: |
           git fetch --tags
@@ -55,7 +31,6 @@ jobs:
           echo "LATEST_TAG from stable step: ${{ env.LATEST_TAG }}"
 
       - name: Get next build number
-        if: steps.check_release_branch.outputs.release_exists == 0
         id: build
         run: |
           echo "LATEST_TAG from environment: ${{ env.LATEST_TAG }}"
@@ -68,7 +43,6 @@ jobs:
           echo "Next build tag will be: $NEW_TAG"
 
       - name: Push new tag
-        if: steps.check_release_branch.outputs.release_exists == 0
         run: |
           git tag "${{ env.NEW_TAG }}"
           git push origin "${{ env.NEW_TAG }}"
