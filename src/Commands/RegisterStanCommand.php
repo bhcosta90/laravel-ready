@@ -36,7 +36,7 @@ final class RegisterStanCommand extends Command
         );
 
         $composer = json_decode(file_get_contents(base_path('composer.json')));
-        $composer->scripts->analyse = './vendor/bin/phpstan analyse';
+        $composer->scripts->analyse = './vendor/bin/phpstan analyse --memory-limit=2G';
         file_put_contents(base_path('composer.json'), json_encode($composer, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
 
         $this->info('Stan already installed');
