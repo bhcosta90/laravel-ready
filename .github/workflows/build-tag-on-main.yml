@@ -35,12 +35,12 @@ jobs:
           echo "minor=${VERSION[1]}"
           echo "patch=${VERSION[2]}"
           
-          echo "LATEST_TAG=${VERSION[0]}.${VERSION[1]}.${VERSION[2]}"
+          echo "LATEST_TAG=${VERSION[0]}.${VERSION[1]}.${VERSION[2]}" >> $GITHUB_ENV
 
-#      - name: Get next build number
-#        id: build
-#        run: |
-#          echo "LATEST_TAG from environment: ${{ env.LATEST_TAG }}"
+      - name: Get next build number
+        id: build
+        run: |
+          echo "LATEST_TAG from environment: ${{ env.LATEST_TAG }}"
 #          prefix=$LATEST_TAG
 #          git fetch --tags
 #          count=$(git tag --sort=-v:refname | grep -E "^$prefix-[0-9]+$" | wc -l)
