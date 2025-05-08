@@ -35,6 +35,10 @@ final class RegisterStanCommand extends Command
             $content->getBody()->getContents()
         );
 
+        $composer = json_decode(file_get_contents(base_path('composer.json')));
+        $composer->scripts->analyse = './vendor/bin/phpstan analyse';
+        file_put_contents(base_path('composer.json'), json_encode($composer, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+
         $this->info('Stan already installed');
     }
 }
