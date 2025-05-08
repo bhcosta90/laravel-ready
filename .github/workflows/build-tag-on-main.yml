@@ -42,7 +42,7 @@ jobs:
           count=$(git tag --sort=-v:refname | grep -E "^$prefix-[0-9]+$" | wc -l)
           next=$((count + 1))
           
-          IFS='.' read -r -a VERSION <<< "$latest"
+          IFS='.' read -r -a VERSION <<< "${{ env.LATEST_TAG }}"
           
           NEW_TAG="${VERSION[0]}.${VERSION[1]}.${VERSION[2]}-$next"
           echo "NEW_TAG=$NEW_TAG" >> $GITHUB_ENV
