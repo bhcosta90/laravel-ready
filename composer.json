@@ -18,5 +18,11 @@
         "guzzlehttp/guzzle": "^7.9",
         "illuminate/collections": "^12.1",
         "rector/rector": "^2.0"
-    }
-}
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Costa\\Ready\\Providers\\ReadyServiceProvider"
+            ]
+        }
+    }}
