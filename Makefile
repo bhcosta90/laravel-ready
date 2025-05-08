@@ -2,22 +2,18 @@ date:
 	date '+%Y-%m-%d %H:%M:%S' > version
 	git add version
 	git commit -m 'feat: change version'
-	git push
 
 delete-tag:
-	git fetch --tags
+	git fetch
 	@if [ -z "$(version)" ]; then \
-		echo "Error: You must provide a version prefix (e.g., make delete-tag version=0.0)"; \
+		echo "Error: You must specify the version as MAJOR.MINOR."; \
 		exit 1; \
 	fi
-	git fetch --tags
-	tags_to_delete=$$(git tag --list "$(version)-*" | tr '\n' ' '); \
-	if [ -n "$$tags_to_delete" ]; then \
-		git push origin --delete $$tags_to_delete; \
-		echo "Deleted tags: $$tags_to_delete"; \
-	else \
-		echo "No tags found matching prefix: $(version)-*"; \
-	fi
+	@echo "Removing tags matching '$(version).0-*'..."
+	@for tag in $(shell git tag -l "$(version).0-*"); do \
+		git tag -d $$tag && git push origin --delete $$tag; \
+	done
+	@echo "All '$(version).*' tags have been removed."
 
 help:
 	@echo "  make date                   - Creates a version file with the current date and time"
