@@ -17,6 +17,7 @@ final class ReadyServiceProvider extends ServiceProvider
             Commands\RegisterPintCommand::class,
             Commands\RegisterStanCommand::class,
             Commands\RegisterRectorCommand::class,
+            Commands\RegisterRemoveComments::class,
         ]);
     }
 
